@@ -67,3 +67,4 @@ public:
 	inline T& operator()( std::vector<unsigned int>& indices) { return (*this)[computeIndex(indices)]; }
 };
 using TensorXF = Tensor<float>;
+using U = std::vector<unsigned int>;

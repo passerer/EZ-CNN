@@ -4,13 +4,15 @@
 class PoolingLayer :public Layer
 {
 public:
-	PoolingLayer(){ setLayerType(LayerType::Pooling); }
+	PoolingLayer(unsigned int _stride=2):stride(_stride){ setLayerType(LayerType::Pooling); }
+protected:
+	unsigned int stride;
 };
 
 class MaxPoolingLayer :public PoolingLayer
 {
 public:
-	void forward(const TensorXF& input, TensorXF& output);
+	void forward( TensorXF& input, TensorXF& output);
 	void backward(const TensorXF& input, const TensorXF& output,
 		const TensorXF& preDiff, TensorXF& nextDiff);
 	void update();
@@ -19,7 +21,7 @@ public:
 class AveragePoolingLayer :public PoolingLayer
 {
 public:
-	void forward(const TensorXF& input, TensorXF& output);
+	void forward(TensorXF& input, TensorXF& output);
 	void backward(const TensorXF& input, const TensorXF& output,
 		const TensorXF& preDiff, TensorXF& nextDiff);
 	void update();
