@@ -1,2 +1,5 @@
 ## EZ-CNN
-An implemention of Convolution Nerual Networ using pure C++
+
+基于C++11的卷积神经网络实现, 无外部依赖库.
+
+无gpu, 无多线程, 无SSE加速. 纯粹用于学习.
