@@ -20,9 +20,9 @@ void SoftmaxLayer::forward( TensorXF& input, TensorXF& output)
 		}
 	}
 }
-}
+
 
 void SoftmaxLayer::backward(const TensorXF& input, const TensorXF& output,
 	const TensorXF& preDiff, TensorXF& nextDiff)
 {
-	
+}

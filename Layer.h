@@ -18,7 +18,8 @@ enum class LayerType
 	Input,
 	Pooling,
 	Softmax,
-	Reshape
+	Reshape,
+	Loss
 };
 
 class Layer{
