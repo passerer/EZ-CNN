@@ -5,10 +5,14 @@
 
 class SoftmaxLayer :public Layer
 {
+private:
+	TensorXF diff;
+	TensorXF output;
 public:
-	SoftmaxLayer(){ setLayerType(LayerType::Softmax); }
-	void forward( TensorXF& input, TensorXF& output);
-	void backward(const TensorXF& input, const TensorXF& output,
-		const TensorXF& preDiff, TensorXF& nextDiff);
+	SoftmaxLayer(unsigned int nb, unsigned int nc) :diff(U{ nb, nc }, 0.f), output(U{ nb, nc }, 0.f)
+	{ setLayerType(LayerType::Softmax); }
+	TensorXF forward( TensorXF& input);
+	void backward(TensorXF& input);
+	TensorXF& getoutput();
 	void update();
 };

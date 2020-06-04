@@ -12,9 +12,13 @@ public:
 };
 class CrossEntropyLossLayer :public LossLayer
 {
+private:
+	TensorXF diff;
 public:
+	CrossEntropyLossLayer(unsigned int numBatch, unsigned int numClass) :
+		LossLayer(),
+		diff(U{ numBatch, numClass }, 0.f)
+		{}
 	void forward(TensorXF& predict, Tensor<unsigned int>& label);
-	void backward(const TensorXF& input, const TensorXF& output,
-		const TensorXF& preDiff, TensorXF& nextDiff);
-	void update();
+	TensorXF backward(TensorXF& predict, Tensor<unsigned int>& label);
 };

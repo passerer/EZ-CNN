@@ -3,7 +3,7 @@
 #include <iostream>
 #include "SoftmaxLayer.h"
 
-void SoftmaxLayer::forward( TensorXF& input, TensorXF& output)
+TensorXF SoftmaxLayer::forward( TensorXF& input)
 {
 	std::vector<unsigned int> inDim = input.dim();//b  c
 	std::vector<unsigned int> outDim = output.dim(); // b c
@@ -19,10 +19,31 @@ void SoftmaxLayer::forward( TensorXF& input, TensorXF& output)
 			output(U{ nb, nc }) = std::exp(input(U{ nb, nc })) / sum;
 		}
 	}
+	TensorXF out(output);
+	return out;
 }
 
 
-void SoftmaxLayer::backward(const TensorXF& input, const TensorXF& output,
-	const TensorXF& preDiff, TensorXF& nextDiff)
+void SoftmaxLayer::backward( TensorXF& input)
 {
+	std::vector<unsigned int> inDim = input.dim();
+	std::vector<unsigned int> diffDim = diff.dim();//b  c
+	for (unsigned int nb = 0; nb < diffDim[0]; ++nb)
+	{
+		for (unsigned int nc = 0; nc < diffDim[1]; ++nc)
+		{
+			for (unsigned int c = 0; c < inDim[1]; ++c)
+			{
+				if (nc != c)
+				{
+					diff(U{ nb, nc }) -= input(U{ nb, c })*output(U{ nb, c })*output(U{ nb, nc });
+				}
+				else
+				{
+					diff(U{ nb, nc }) += input(U{ nb, c })*output(U{ nb, c })*(1 - output(U{ nb, nc }));
+				}
+			}
+		}
+	}
 }
+

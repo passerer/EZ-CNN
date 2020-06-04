@@ -3,13 +3,14 @@
 #include<vector>
 #include <algorithm>
 #include <numeric>
+#include <iostream>
 
 template<typename T=float>
 class Tensor
 {
 private:
-	std::vector<unsigned int> dimensions;
-	T* dataOffset;
+	std::vector<unsigned int> dimensions = std::vector<unsigned int>{};
+	T* dataOffset =nullptr;
 
 	inline const unsigned int computeIndex(const std::vector<unsigned int>& indices) const
 	{
@@ -21,10 +22,20 @@ private:
 	}
 
 public:
-	Tensor(){ dimensions = std::vector<int>{}; dataOffset = std::nullptr_t; }
+	Tensor(){  }
 	Tensor(const std::vector<unsigned int> _dimensions) :dimensions(_dimensions)
 		, dataOffset(new T[this->size()])  {}
-	~Tensor()  { delete dataOffset; }
+	Tensor(const std::vector<unsigned int> _dimensions, const T value) :dimensions(_dimensions)
+		, dataOffset(new T[this->size()])  {
+		fillData(value);
+	}
+	Tensor(const Tensor<T>& target) :dimensions(target.dim()), dataOffset(new T[this->size()])
+	{
+		const std::size_t len = sizeof(T)*this->size();
+		memcpy(this->data(), target.data(), len);
+	}
+
+	~Tensor()  { if (nullptr != dataOffset) { delete dataOffset; std::cout << "delete" << std::endl; } }
 
 //	inline const T* data() const{ return dataOffset; }
 	inline  T* data() const{ return dataOffset; }
