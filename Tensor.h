@@ -76,6 +76,10 @@ public:
 	inline  T& operator[]( std::size_t index) const { return *(dataOffset + index); }
 //	inline const T& operator()(const std::vector<unsigned int>& indices) const { return (*this)[computeIndex(indices)]; }
 	inline T& operator()( std::vector<unsigned int>& indices) { return (*this)[computeIndex(indices)]; }
+	inline void operator = (Tensor<T>& target) {
+		const std::size_t len = sizeof(T)*this->size();
+		memcpy(this->data(), target.data(), len);
+	}
 };
 using TensorXF = Tensor<float>;
 using U = std::vector<unsigned int>;

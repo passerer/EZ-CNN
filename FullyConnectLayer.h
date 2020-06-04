@@ -6,16 +6,23 @@ class FullyConnectLayer :public Layer
 private:
 	TensorXF weight;
 	TensorXF bias;
+	TensorXF dx;
+	TensorXF dw;
+	TensorXF db;
+	TensorXF preInput;
 public:
-	FullyConnectLayer(unsigned int ki,unsigned int ko):
-		weight(std::vector<unsigned int>{ki,ko}),
-		bias(std::vector<unsigned int>{ko})
+	FullyConnectLayer(unsigned int nb,unsigned int ni,unsigned int no):
+		weight(U{ ni, no},0.f),
+		bias(U{ no }, 0.f),
+		dx(U{ nb, ni }, 0.f),
+		dw(U{ ni, no }, 0.f),
+		db(U{ no }, 0.f),
+		preInput(U{ nb, ni},0.f)
 	{ setLayerType(LayerType::FullConnect); 
 	  init();
 	}
 	void init();
 	void forward( TensorXF& input, TensorXF& output);
-	void backward(const TensorXF& input, const TensorXF& output,
-		const TensorXF& preDiff, TensorXF& nextDiff);
+	void backward(TensorXF& input);
 	void update();
 };

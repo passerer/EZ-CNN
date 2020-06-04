@@ -23,6 +23,7 @@ void FullyConnectLayer::forward(TensorXF& input, TensorXF& output)
 {
 	std::vector<unsigned int> inDim = input.dim();//b  c
 	std::vector<unsigned int> outDim = output.dim(); // b  nc
+	preInput = input;
 	for (unsigned int nb = 0; nb < outDim[0]; ++nb)
 	{
 		for (unsigned int nc = 0; nc < outDim[1]; ++nc)
@@ -33,5 +34,43 @@ void FullyConnectLayer::forward(TensorXF& input, TensorXF& output)
 				output(U{ nb, nc }) += input(U{ nb, c })*weight(U{ c, nc });
 			}
 		}
+	}
+}
+
+void FullyConnectLayer::backward(TensorXF & input)
+{
+	// Y = WX + b
+	// dx
+	std::vector<unsigned int> preInputDim = preInput.dim();
+	std::vector<unsigned int> weightDim = weight.dim();
+	for (unsigned int nb = 0; nb < preInputDim[0]; ++nb)
+	{
+		for (unsigned int ni = 0; ni < preInputDim[1]; ++ni)
+		{
+			for (unsigned int no = 0; no < weightDim[1]; ++no)
+			{
+				dx(U{ nb, ni }) += weight(U{ ni, no }) * input(U{ nb, no });
+			}
+		}
+	}
+	//dw
+	for (unsigned int nb = 0; nb < preInputDim[0]; ++nb)
+	{
+		for (unsigned int ni = 0; ni < preInputDim[1]; ++ni)
+		{
+			for (unsigned int no = 0; no < weightDim[1]; ++no)
+			{
+				dw(U{ ni, no }) += preInput(U{ nb, ni })*input(U{ nb, no });
+			}
+		}
+	}
+	//db
+	for (unsigned int nb = 0; nb < preInputDim[0]; ++nb)
+	{
+		for (unsigned int no = 0; no < weightDim[1]; ++no)
+		{
+			db(U{ no }) += input(U{ nb, no });
+		}
+		
 	}
 }
