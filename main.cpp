@@ -7,6 +7,7 @@
 #include"PoolingLayer.h"
 #include"SoftmaxLayer.h"
 #include"LossLayer.h"
+#include"FullyConnectLayer.h"
 
 using namespace std;
 int main()
@@ -24,12 +25,15 @@ int main()
 	}
 	cout <<endl<< "input prepared" << endl;
 	pre.fillData(3);
+	FullyConnectLayer F(1, 10, 10);
 	SoftmaxLayer S(1, 10);
 	CrossEntropyLossLayer L(1, 10);
-	auto out = S.forward(in);
-	L.forward(out, pre);
-	auto out2 = L.backward(out, pre);
-	S.backward(out2);
+	auto out1 = F.forward(in);
+	auto out2 = S.forward(out1);
+	L.forward(out2, pre);
+	auto out3 = L.backward(out2, pre);
+	auto out4 = S.backward(out3);
+	auto out5 = F.backward(out4);
 	system("pause");
 	return 0;
 }

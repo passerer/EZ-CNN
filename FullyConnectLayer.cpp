@@ -19,9 +19,12 @@ void FullyConnectLayer::init()
 	}
 }
 
-void FullyConnectLayer::forward(TensorXF& input, TensorXF& output)
+TensorXF FullyConnectLayer::forward(TensorXF& input)
 {
+	
 	std::vector<unsigned int> inDim = input.dim();//b  c
+	std::vector<unsigned int> biasDim = bias.dim();//nc
+	TensorXF output(U{ inDim[0], biasDim[0] },0.f);
 	std::vector<unsigned int> outDim = output.dim(); // b  nc
 	preInput = input;
 	for (unsigned int nb = 0; nb < outDim[0]; ++nb)
@@ -31,13 +34,16 @@ void FullyConnectLayer::forward(TensorXF& input, TensorXF& output)
 			output(U{ nb, nc }) = bias(U{ nc });
 			for (unsigned int c = 0; c < inDim[1]; ++c)
 			{
+				std::cout << input(U{ nb, c }) << "    " << weight(U{ c, nc }) << std::endl;
 				output(U{ nb, nc }) += input(U{ nb, c })*weight(U{ c, nc });
 			}
+			
 		}
 	}
+	return output;
 }
 
-void FullyConnectLayer::backward(TensorXF & input)
+TensorXF FullyConnectLayer::backward(TensorXF & input)
 {
 	// Y = WX + b
 	// dx
@@ -73,4 +79,5 @@ void FullyConnectLayer::backward(TensorXF & input)
 		}
 		
 	}
+	return TensorXF(dx);
 }

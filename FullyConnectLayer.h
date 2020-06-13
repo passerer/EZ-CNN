@@ -22,7 +22,7 @@ public:
 	  init();
 	}
 	void init();
-	void forward( TensorXF& input, TensorXF& output);
-	void backward(TensorXF& input);
+	TensorXF forward( TensorXF& input);
+	TensorXF backward(TensorXF& input);
 	void update();
 };
