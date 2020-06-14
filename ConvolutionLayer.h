@@ -6,18 +6,23 @@ class ConvolutionLayer :public Layer
 private:
 	TensorXF weight;
 	TensorXF bias;
+	TensorXF dw;
+	TensorXF db;
+	TensorXF preInput;
 public:
-	ConvolutionLayer(unsigned int ki, unsigned int ko,unsigned int h=3,unsigned int w=3):
-		weight(std::vector<unsigned int>{h,w,ki,ko}),
-		bias(std::vector<unsigned int>{ko})
+	ConvolutionLayer(unsigned int nb,unsigned int nh,unsigned int nw,unsigned int c, unsigned int nc,unsigned int h=3,unsigned int w=3):
+		weight(U{h, w, c, nc}),
+		bias(U{nc}), 
+		dw(U{h, w, c, nc},0.f),
+		db(U{ nc }, 0.f),
+		preInput(U{nb,nh,nw,c,nc},0.f)
 	{
 		setLayerType(LayerType::Convolution);
 		init();
 	}
 	void init();
-	void forward(TensorXF& input, TensorXF& output);
-	void backward(const TensorXF& input, const TensorXF& output,
-		const TensorXF& preDiff, TensorXF& nextDiff);
+	TensorXF forward(TensorXF& input);
+	TensorXF backward(TensorXF& input);
 	void update();
 };
 

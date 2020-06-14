@@ -15,9 +15,11 @@ void ConvolutionLayer::init()
 	bias.fillData(0.f);
 }
 
-void ConvolutionLayer::forward( TensorXF& input, TensorXF& output)
+TensorXF ConvolutionLayer::forward( TensorXF& input)
 {
+	preInput = input;
 	std::vector<unsigned int> inDim = input.dim();//b h w c
+	TensorXF output(inDim, 0.f);
 	std::vector<unsigned int> outDim = output.dim(); // b h w c
 	std::vector<unsigned int> kernelDim = weight.dim();//h w ic oc
 	int center_h = int(kernelDim[0] / 2), center_w = int(kernelDim[1] / 2);
@@ -51,5 +53,99 @@ void ConvolutionLayer::forward( TensorXF& input, TensorXF& output)
 		}
 	}
 	
+	return output;
+}
 
+TensorXF ConvolutionLayer::backward(TensorXF& input)
+{
+	std::vector<unsigned int> dbDim = db.dim();//nc
+	std::vector<unsigned int> inDim = input.dim();//b , h, w, nc
+	std::vector<unsigned int> kernelDim = weight.dim();//h w ic oc
+	// db
+	for (unsigned int nc = 0; nc < dbDim[0]; nc++)
+	{
+		db(U{ nc }) = 0.f;
+		for (unsigned int nb = 0; nb < inDim[0];nb++)
+		for (unsigned int nh = 0; nh < inDim[1];nh++)
+		for (unsigned int nw = 0; nw < inDim[2]; nw++)
+		{
+			db(U{ nc }) += input(U{ nb, nh, nw, nc });
+		}
+		db(U{ nc }) /= inDim[0];
+	}
+	//dw
+	
+	std::vector<unsigned int> dwDim = dw.dim();//k, l, c, nc
+	int center_h = int(dwDim[0] / 2);
+	int	center_w = int(dwDim[1] / 2);
+	for (unsigned int nk = 0; nk < dwDim[0]; nk++)
+	{
+		for (unsigned int nl = 0; nl < dwDim[1]; nl++)
+		{
+			for (unsigned int c = 0; c < dwDim[2]; c++)
+			{
+				for (unsigned int nc = 0; nc < dwDim[3]; nc++)
+				{
+					for (unsigned int nh = 0; nh < inDim[1]; nh++)
+					{
+						if (nh + nk < center_h || nh + nk >= center_h+inDim[1])
+						{
+							dw(U{ nk,nl,c,nc }) += 0.f;
+						}
+						else
+						{
+							unsigned int m_h = -center_h + nh + nk;
+							for (unsigned int nw = 0; nw < inDim[2]; nw++)
+							{
+								if (nw + nl < center_w || nw + nl >= inDim[2] + center_w)
+								{
+									dw(U{ nk, nl, c, nc }) += 0.f;
+								}
+								else
+								{
+									unsigned int m_w = -center_w + nw + nl;
+									for (unsigned int nb = 0; nb < inDim[0]; nb++)
+									{
+										dw(U{ nk, nl, c, nc }) += input(U{ nb, m_h, m_w, nc })*preInput(U{ nb, m_h, m_w, c});
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	//dx
+	std::vector<unsigned int> preInDim = preInput.dim();//b , h, w, nc
+	TensorXF output(preInDim, 0.f);
+	for (unsigned int nb = 0; nb < preInDim[0]; nb++)
+	{
+		for (unsigned int nh = 0; nh < preInDim[1]; nh++)
+		{
+			for (unsigned int nw = 0; nw < preInDim[2]; nw++)
+			{
+				for (unsigned int c = 0; c < preInDim[3]; c++)
+				{
+
+					for (unsigned int i = 0;
+						i<kernelDim[0]; i++)
+					for (unsigned int j = 0;
+						j <kernelDim[1]; j++)
+					if (nh + i<center_h ||  //nh-center_h+i<0
+						nh + i >= inDim[1] + center_h ||
+						nw + j < center_w ||
+						nw + j >= inDim[2] + center_w){
+					}
+					else{
+						for (unsigned int nc = 0; nc < inDim[3]; nc++)
+							output(U{ nb, nh, nw, c }) +=
+							input(U{ nb, nh + i - center_h, nw + j - center_w, nc})
+							* weight(U{ kernelDim[0] - 1 - i, kernelDim[1]-1-j, c, nc });
+					}
+				}
+			}
+		}
+	}
+	return output;
 }
