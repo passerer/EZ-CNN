@@ -35,7 +35,7 @@ public:
 		memcpy(this->data(), target.data(), len);
 	}
 
-	~Tensor()  { if (nullptr != dataOffset) { delete dataOffset; std::cout << "delete" << std::endl; } }
+	~Tensor()  { if (nullptr != dataOffset) { delete dataOffset;  } }
 
 //	inline const T* data() const{ return dataOffset; }
 	inline  T* data() const{ return dataOffset; }

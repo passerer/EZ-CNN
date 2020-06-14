@@ -27,7 +27,7 @@ class Layer{
 protected :
 	Phase phase = Phase::Train;
 	LayerType layerType;
-	float lr = 0.1f; 
+	float lr = 0.001f; 
 
 public:
 	Layer(){}

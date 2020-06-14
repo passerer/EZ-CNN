@@ -34,7 +34,6 @@ TensorXF FullyConnectLayer::forward(TensorXF& input)
 			output(U{ nb, nc }) = bias(U{ nc });
 			for (unsigned int c = 0; c < inDim[1]; ++c)
 			{
-				std::cout << input(U{ nb, c }) << "    " << weight(U{ c, nc }) << std::endl;
 				output(U{ nb, nc }) += input(U{ nb, c })*weight(U{ c, nc });
 			}
 			
@@ -80,4 +79,18 @@ TensorXF FullyConnectLayer::backward(TensorXF & input)
 		
 	}
 	return TensorXF(dx);
+}
+
+void FullyConnectLayer::update()
+{
+	std::vector<unsigned int> weightDim = weight.dim();
+	for (unsigned int nc = 0; nc < weightDim[1]; nc++)
+	{
+		bias(U{ nc }) -= lr*db(U{ nc });
+	    for (unsigned int c = 0; c < weightDim[0];c++)
+	
+	    {
+	    	weight(U{ c, nc }) -= lr * dw(U{ c, nc });
+	    }
+	}
 }

@@ -9,6 +9,7 @@ protected:
 	float loss;
 public:
 	LossLayer():loss(0.f){ setLayerType(LayerType::Loss); }
+	float getLoss(){ return this->loss; }
 };
 class CrossEntropyLossLayer :public LossLayer
 {
