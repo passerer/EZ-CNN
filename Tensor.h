@@ -80,6 +80,23 @@ public:
 		const std::size_t len = sizeof(T)*this->size();
 		memcpy(this->data(), target.data(), len);
 	}
+	inline void operator = (std::vector<T>& target) {
+		const std::size_t size = target.size();
+		T* tmp = this->data();
+		for (std::size_t i = 0; i < size; ++i)
+		{
+			*(tmp++) = target[i];
+		}
+	}
+
+	inline void operator *= (T value) {
+		const std::size_t size = this->size();
+		T* tmp = this->data();
+		for (std::size_t i = 0; i < size; ++i)
+		{
+			*(tmp++) *= value;
+		}
+	}
 };
 using TensorXF = Tensor<float>;
 using U = std::vector<unsigned int>;

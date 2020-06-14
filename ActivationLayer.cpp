@@ -3,51 +3,77 @@
 #include "ActivationLayer.h"
 #include "MathFunctions.h"
 
-void SigmodLayer::forward(const TensorXF& input, TensorXF& output)
+TensorXF SigmoidLayer::forward( TensorXF& input)
 {
+	std::vector<unsigned int> inDim = input.dim();
+	TensorXF output(inDim, 0.f);
 	std::size_t size = input.size();
 	std::size_t offset = 0;
 	for (; offset < size; ++offset)
 	{
 		output[offset] = sigmoid(input[offset]);
 	}
+	y = output;
+	return output;
 	
 }
-void SigmodLayer::backward(const TensorXF& input, const TensorXF& output,
-	const TensorXF& preDiff, TensorXF& nextDiff)
+TensorXF SigmoidLayer::backward( TensorXF& input)
 {
-
+	std::vector<unsigned int> inDim = input.dim();
+	TensorXF output(inDim, 0.f);
+	std::size_t size = input.size();
+	std::size_t offset = 0;
+	for (; offset < size; ++offset)
+	{
+		output[offset] =  input[offset]*y[offset]*(1-y[offset]);
+	}
+	return output;
 }
 
-void TanhLayer::forward(const TensorXF& input, TensorXF& output)
+TensorXF TanhLayer::forward(TensorXF& input)
 {
+	std::vector<unsigned int> inDim = input.dim();
+	TensorXF output(inDim, 0.f);
 	std::size_t size = input.size();
 	std::size_t offset = 0;
 	for (; offset < size; ++offset)
 	{
 		output[offset] = tanh_(input[offset]);
 	}
+	return output;
 
 }
-void TanhLayer::backward(const TensorXF& input, const TensorXF& output,
-	const TensorXF& preDiff, TensorXF& nextDiff)
+/*
+TensorXF TanhLayer::backward(TensorXF& input)
 {
 
 }
-void ReluLayer::forward(const TensorXF& input, TensorXF& output)
+*/
+TensorXF ReluLayer::forward( TensorXF& input)
 {
+	std::vector<unsigned int> inDim = input.dim();
+	TensorXF output(inDim, 0.f);
 	std::size_t size = input.size();
 	std::size_t offset = 0;
 	for (; offset < size; ++offset)
 	{
+		if (input[offset] >0.f){ pos[offset] = 1.f; }
 		output[offset] = relu(input[offset]);
 	}
+	return output;
 
 }
-void ReluLayer::backward(const TensorXF& input, const TensorXF& output,
-	const TensorXF& preDiff, TensorXF& nextDiff)
+TensorXF ReluLayer::backward(TensorXF& input)
 {
-
+	std::vector<unsigned int> inDim = input.dim();
+	TensorXF output(inDim, 0.f);
+	std::size_t size = input.size();
+	std::size_t offset = 0;
+	for (; offset < size; ++offset)
+	{
+		output[offset] = pos[offset] * input[offset];
+	}
+	return output;
 }
 
 

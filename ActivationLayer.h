@@ -3,18 +3,25 @@
 
 class ActivationLayer :public Layer
 {
-public:
-	ActivationLayer() { setLayerType(LayerType::Activation); }
-};
-class SigmodLayer : public ActivationLayer
-{
-public:
-//	SigmodLayer();
-//	virtual ~SigmodLayer();
 
-	 void forward(const TensorXF& input, TensorXF& output) ;
-	 void backward(const TensorXF& input, const TensorXF& output,
-		const TensorXF& preDiff, TensorXF& nextDiff) ;
+public:
+	ActivationLayer() 
+	{ setLayerType(LayerType::Activation); }
+};
+class SigmoidLayer : public ActivationLayer
+{
+private:
+	TensorXF y;
+public:
+	SigmoidLayer(U dim) :y(dim, 0.f){}
+
+	SigmoidLayer(unsigned int nb, unsigned int nh, unsigned int nw, unsigned int nc)
+		:y(U{ nb, nh, nw, nc }, 0.f){}
+
+	SigmoidLayer(unsigned int nb, unsigned int nc)
+		:y(U{ nb, nc }, 0.f){ }
+	 TensorXF forward( TensorXF& input) ;
+	 TensorXF backward( TensorXF& input) ;
 };
 
 class TanhLayer : public ActivationLayer
@@ -23,18 +30,30 @@ public:
 //	TanhLayer();
 //	virtual ~TanhLayer();
 
-    void forward(const TensorXF& input, TensorXF& output) ;
-    void backward(const TensorXF& input, const TensorXF& output,
-		const TensorXF& preDiff, TensorXF& nextDiff) ;
+	TensorXF forward(TensorXF& input);
+	TensorXF backward(TensorXF& input);
 };
 
 class ReluLayer : public ActivationLayer
 {
+private:
+	TensorXF pos;
+	TensorXF dx;
 public:
-//	ReluLayer();
-//	virtual ~ReluLayer();
+	ReluLayer(U dim) :pos(dim, 0.f), dx(dim, 0.f)
+	{
+	}
 
-	 void forward(const TensorXF& input, TensorXF& output) ;
-	 void backward(const TensorXF& input, const TensorXF& output,
-		const TensorXF& preDiff, TensorXF& nextDiff) ;
+	ReluLayer(unsigned int nb, unsigned int nh, unsigned int nw, unsigned int nc)
+		:pos(U{ nb, nh, nw, nc }, 0.f), dx(U{ nb, nh, nw, nc }, 0.f)
+	{
+	}
+
+	ReluLayer(unsigned int nb, unsigned int nc)
+		:pos(U{ nb, nc }, 0.f), dx(U{ nb, nc }, 0.f)
+	{
+	}
+
+	TensorXF forward(TensorXF& input);
+	TensorXF backward(TensorXF& input);
 };

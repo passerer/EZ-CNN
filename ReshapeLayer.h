@@ -5,10 +5,15 @@
 
 class ReshapeLayer :public Layer
 {
+private:
+	TensorXF  x;
+	TensorXF dx;
 public:
-	ReshapeLayer(){ setLayerType(LayerType::Reshape); }
-	void forward(const TensorXF& input, TensorXF& output);
-	void backward(const TensorXF& input, const TensorXF& output,
-		const TensorXF& preDiff, TensorXF& nextDiff);
+	ReshapeLayer(unsigned int nb, unsigned int nh ,unsigned int nw,unsigned int nc) :
+		x(U{ nb, nh*nw*nc }, 0.f),
+		dx(U{nb,nh,nw,nc},0.f)
+	{ setLayerType(LayerType::Reshape); }
+	TensorXF forward( TensorXF& input);
+	TensorXF backward( TensorXF& input);
 	void update();
 };

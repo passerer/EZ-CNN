@@ -84,6 +84,10 @@ TensorXF FullyConnectLayer::backward(TensorXF & input)
 void FullyConnectLayer::update()
 {
 	std::vector<unsigned int> weightDim = weight.dim();
+	std::vector<unsigned int> dxDim = dx.dim();
+	float b = 1.f / dxDim[0];
+	db *= b;
+	dw *= b;
 	for (unsigned int nc = 0; nc < weightDim[1]; nc++)
 	{
 		bias(U{ nc }) -= lr*db(U{ nc });
