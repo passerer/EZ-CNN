@@ -31,6 +31,7 @@ TensorXF SoftmaxLayer::backward( TensorXF& input)
 	{
 		for (unsigned int nc = 0; nc < diffDim[1]; ++nc)
 		{
+			diff(U{ nb, nc }) = 0.f;
 			for (unsigned int c = 0; c < inDim[1]; ++c)
 			{
 				if (nc != c)

@@ -8,7 +8,7 @@ float CrossEntropyLossLayer::forward(TensorXF& predict, Tensor<unsigned int>& la
 	for (unsigned int nb = 0; nb < inDim[0]; ++nb)
 	{
 		unsigned int index = label(U{ nb });
-		loss -= std::log(predict(U{ nb, index })+1e-8);
+		loss -= std::log(predict(U{ nb, index })+0.0001f);
 	}
 	loss /= inDim[0];
 	return loss;
@@ -26,7 +26,7 @@ TensorXF CrossEntropyLossLayer::backward(TensorXF& predict, Tensor<unsigned int>
 	for (unsigned int nb = 0; nb < inDim[0]; ++nb)
 	{
 		unsigned int index = label(U{ nb });
-		diff(U{ nb, index }) = -1.f / (predict(U{ nb, index }) + 1e-8);
+		diff(U{ nb, index }) = -1.f / (predict(U{ nb, index }) + 0.0001f);
 	}
 	TensorXF out(diff);
 	return out;

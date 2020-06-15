@@ -97,6 +97,16 @@ public:
 			*(tmp++) *= value;
 		}
 	}
+	void print()
+	{
+		const std::size_t size = this->size();
+		T* tmp = this->data();
+		for (std::size_t i = 0; i < size; ++i)
+		{
+			std::cout<<*(tmp++)<<" ";
+		}
+		std::cout << std::endl<<std::endl;
+	}
 };
 using TensorXF = Tensor<float>;
 using U = std::vector<unsigned int>;

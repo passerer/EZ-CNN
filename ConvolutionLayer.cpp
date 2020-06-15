@@ -23,7 +23,7 @@ TensorXF ConvolutionLayer::forward( TensorXF& input)
 	std::vector<unsigned int> kernelDim = weight.dim();//h w ic oc
 	outDim[3] = kernelDim[3];
 	TensorXF output(outDim, 0.f);
-	int center_h = int(kernelDim[0] / 2), center_w = int(kernelDim[1] / 2);
+	unsigned int center_h = int(kernelDim[0] / 2), center_w = int(kernelDim[1] / 2);
 	
 	for (unsigned int nb = 0; nb < outDim[0]; nb++)
 	{
@@ -77,8 +77,8 @@ TensorXF ConvolutionLayer::backward(TensorXF& input)
 	//dw
 	
 	std::vector<unsigned int> dwDim = dw.dim();//k, l, c, nc
-	int center_h = int(dwDim[0] / 2);
-	int	center_w = int(dwDim[1] / 2);
+	unsigned int center_h = int(dwDim[0] / 2);
+	unsigned int center_w = int(dwDim[1] / 2);
 	for (unsigned int nk = 0; nk < dwDim[0]; nk++)
 	{
 		for (unsigned int nl = 0; nl < dwDim[1]; nl++)
