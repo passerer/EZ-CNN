@@ -15,7 +15,7 @@ public:
 		bias(U{nc}), 
 		dw(U{h, w, c, nc},0.f),
 		db(U{ nc }, 0.f),
-		preInput(U{nb,nh,nw,c,nc},0.f)
+		preInput(U{nb,nh,nw,c},0.f)
 	{
 		setLayerType(LayerType::Convolution);
 		init();

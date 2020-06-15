@@ -19,9 +19,10 @@ TensorXF ConvolutionLayer::forward( TensorXF& input)
 {
 	preInput = input;
 	std::vector<unsigned int> inDim = input.dim();//b h w c
-	TensorXF output(inDim, 0.f);
-	std::vector<unsigned int> outDim = output.dim(); // b h w c
+	std::vector<unsigned int> outDim = inDim; // b h w c
 	std::vector<unsigned int> kernelDim = weight.dim();//h w ic oc
+	outDim[3] = kernelDim[3];
+	TensorXF output(outDim, 0.f);
 	int center_h = int(kernelDim[0] / 2), center_w = int(kernelDim[1] / 2);
 	
 	for (unsigned int nb = 0; nb < outDim[0]; nb++)
@@ -86,6 +87,7 @@ TensorXF ConvolutionLayer::backward(TensorXF& input)
 			{
 				for (unsigned int nc = 0; nc < dwDim[3]; nc++)
 				{
+					dw(U{ nk, nl, c, nc }) = 0.f;
 					for (unsigned int nh = 0; nh < inDim[1]; nh++)
 					{
 						if (nh + nk < center_h || nh + nk >= center_h+inDim[1])
@@ -94,7 +96,7 @@ TensorXF ConvolutionLayer::backward(TensorXF& input)
 						}
 						else
 						{
-							unsigned int m_h = -center_h + nh + nk;
+							unsigned int m_h = nh + nk-center_h;
 							for (unsigned int nw = 0; nw < inDim[2]; nw++)
 							{
 								if (nw + nl < center_w || nw + nl >= inDim[2] + center_w)
@@ -103,11 +105,12 @@ TensorXF ConvolutionLayer::backward(TensorXF& input)
 								}
 								else
 								{
-									unsigned int m_w = -center_w + nw + nl;
+									unsigned int m_w = nw + nl - center_w ;
 									for (unsigned int nb = 0; nb < inDim[0]; nb++)
 									{
 										dw(U{ nk, nl, c, nc }) += input(U{ nb, m_h, m_w, nc })*preInput(U{ nb, m_h, m_w, c});
 									}
+									dw(U{ nk, nl, c, nc }) /= inDim[0];
 								}
 							}
 						}
@@ -116,8 +119,9 @@ TensorXF ConvolutionLayer::backward(TensorXF& input)
 			}
 		}
 	}
+
 	//dx
-	std::vector<unsigned int> preInDim = preInput.dim();//b , h, w, nc
+	std::vector<unsigned int> preInDim = preInput.dim();//b , h, w, c
 	TensorXF output(preInDim, 0.f);
 	for (unsigned int nb = 0; nb < preInDim[0]; nb++)
 	{
@@ -148,4 +152,28 @@ TensorXF ConvolutionLayer::backward(TensorXF& input)
 		}
 	}
 	return output;
+}
+
+void ConvolutionLayer::update()
+{
+	std::vector<unsigned int> weightDim = weight.dim();
+	std::vector<unsigned int> biasDim = bias.dim();
+	for (unsigned int nk = 0; nk < weightDim[0]; nk++)
+	{
+		for (unsigned int nl = 0; nl < weightDim[1]; nl++)
+		{
+			for (unsigned int c = 0; c < weightDim[2]; c++)
+			{
+				for (unsigned int nc = 0; nc < weightDim[3]; nc++)
+				{
+					weight(U{ nk, nl, c, nc }) -= lr* dw(U{ nk, nl, c, nc });
+				}
+			}
+		}
+	}
+
+	for (unsigned int nc = 0; nc < biasDim[0]; ++nc)
+	{
+		bias(U{ nc }) -= db(U{ nc });
+	}
 }

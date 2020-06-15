@@ -20,6 +20,6 @@ public:
 		LossLayer(),
 		diff(U{ numBatch, numClass }, 0.f)
 		{}
-	void forward(TensorXF& predict, Tensor<unsigned int>& label);
+	float forward(TensorXF& predict, Tensor<unsigned int>& label);
 	TensorXF backward(TensorXF& predict, Tensor<unsigned int>& label);
 };

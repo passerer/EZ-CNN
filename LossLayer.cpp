@@ -2,7 +2,7 @@
 #include<cmath>
 #include "LossLayer.h"
 
-void CrossEntropyLossLayer::forward(TensorXF& predict, Tensor<unsigned int>& label)
+float CrossEntropyLossLayer::forward(TensorXF& predict, Tensor<unsigned int>& label)
 {
 	std::vector<unsigned int> inDim = predict.dim();
 	for (unsigned int nb = 0; nb < inDim[0]; ++nb)
@@ -11,6 +11,7 @@ void CrossEntropyLossLayer::forward(TensorXF& predict, Tensor<unsigned int>& lab
 		loss -= std::log(predict(U{ nb, index })+1e-8);
 	}
 	loss /= inDim[0];
+	return loss;
 }
 
 TensorXF CrossEntropyLossLayer::backward(TensorXF& predict, Tensor<unsigned int>& label)

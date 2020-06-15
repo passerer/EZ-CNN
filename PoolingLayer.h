@@ -16,6 +16,8 @@ protected:
 class MaxPoolingLayer :public PoolingLayer
 {
 public:
+	MaxPoolingLayer(unsigned int nb, unsigned int nh, unsigned int nw, unsigned int nc, unsigned int _stride = 2) :
+		PoolingLayer(nb, nh, nw, nc, _stride){}
 	TensorXF forward( TensorXF& input);
 	TensorXF backward(TensorXF& input);
 	void update();
@@ -24,6 +26,8 @@ public:
 class AveragePoolingLayer :public PoolingLayer
 {
 public:
+	AveragePoolingLayer(unsigned int nb, unsigned int nh, unsigned int nw, unsigned int nc, unsigned int _stride = 2) :
+		PoolingLayer(nb, nh, nw, nc, _stride){}
 	TensorXF forward(TensorXF& input);
 	TensorXF backward(TensorXF& input);
 	void update();

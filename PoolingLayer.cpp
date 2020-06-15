@@ -100,6 +100,7 @@ TensorXF AveragePoolingLayer::forward(TensorXF& input)
 			}
 		}
 	}
+	return TensorXF(output);
 }
 
 TensorXF AveragePoolingLayer::backward(TensorXF& input)
