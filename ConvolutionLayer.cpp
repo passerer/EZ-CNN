@@ -5,12 +5,14 @@
 
 void ConvolutionLayer::init()
 {
+	std::vector<unsigned int> kernelDim = weight.dim();//h w ic oc
+	unsigned int N = kernelDim[0] * kernelDim[1] * kernelDim[2];
 	std::default_random_engine e; 
-	std::normal_distribution<float> n(0., 1.); 
+	std::normal_distribution<float> n(0.,(float)sqrt(2./N)); 
 	std::size_t weightSize = weight.size();
 	for (std::size_t i = 0; i < weightSize; ++i)
 	{
-		weight[i] = n(e);
+		weight[i] = n(e) ;
 	}
 	bias.fillData(0.f);
 }
@@ -48,7 +50,7 @@ TensorXF ConvolutionLayer::forward( TensorXF& input)
 							input(std::vector<unsigned int>{ nb, nh + i - center_h, nw + j - center_w, c})
 							* weight(std::vector<unsigned int>{ i, j,c,nc });
 					}
-						
+			//		std::cout << output(std::vector<unsigned int>{ nb, nh, nw, nc }) << "  ";
 				}
 			}
 		}

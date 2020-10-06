@@ -23,3 +23,16 @@ public:
 	float forward(TensorXF& predict, Tensor<unsigned int>& label);
 	TensorXF backward(TensorXF& predict, Tensor<unsigned int>& label);
 };
+
+class MeanSquareError2DLayer :public LossLayer
+{
+private:
+	TensorXF diff;
+public:
+	MeanSquareError2DLayer(unsigned int numBatch, unsigned int numClass) :
+		LossLayer(),
+		diff(U{ numBatch, numClass }, 0.f)
+	{}
+	float forward(TensorXF& predict, Tensor<unsigned int>& label);
+	TensorXF backward(TensorXF& predict, Tensor<unsigned int>& label);
+};

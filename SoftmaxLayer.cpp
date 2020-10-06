@@ -16,7 +16,7 @@ TensorXF SoftmaxLayer::forward( TensorXF& input)
 		}
 		for (unsigned int nc = 0; nc < outDim[1]; ++nc)
 		{
-			output(U{ nb, nc }) = std::exp(input(U{ nb, nc })) / sum;
+			output(U{ nb, nc }) = std::exp(input(U{ nb, nc })) / (sum + 0.001f);
 		}
 	}
 	return TensorXF (output);

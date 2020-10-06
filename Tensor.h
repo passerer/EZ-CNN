@@ -1,9 +1,10 @@
 #pragma once
 
-#include<vector>
+#include <vector>
 #include <algorithm>
 #include <numeric>
 #include <iostream>
+#include <assert.h>
 
 template<typename T=float>
 class Tensor
@@ -73,7 +74,7 @@ public:
 		const std::size_t len = sizeof(T)*this->size();
 		memcpy(target.data(), this->data(), len);
 	}
-	inline  T& operator[]( std::size_t index) const { return *(dataOffset + index); }
+	inline  T& operator[](std::size_t index) const { assert(index < this->size()); return *(dataOffset + index); }
 //	inline const T& operator()(const std::vector<unsigned int>& indices) const { return (*this)[computeIndex(indices)]; }
 	inline T& operator()( std::vector<unsigned int>& indices) { return (*this)[computeIndex(indices)]; }
 	inline void operator = (Tensor<T>& target) {
@@ -105,7 +106,17 @@ public:
 		{
 			std::cout<<*(tmp++)<<" ";
 		}
-		std::cout << std::endl<<std::endl;
+		std::cout << std::endl;
+	}
+	void clip(T upper = 80)
+	{
+		const std::size_t size = this->size();
+		T* tmp = this->data();
+		for (std::size_t i = 0; i < size; ++i)
+		{
+			*(tmp) = min(max(-upper, *tmp), upper);
+			tmp++;
+		}
 	}
 };
 using TensorXF = Tensor<float>;

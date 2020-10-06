@@ -5,10 +5,10 @@
 
 void FullyConnectLayer::init()
 {
-	std::default_random_engine e;
-	std::normal_distribution<float> n(0., 1.);
 	std::size_t weightSize = weight.size();
 	std::size_t biaSize = bias.size();
+	std::default_random_engine e;
+	std::normal_distribution<float> n(0.,(float)sqrt(2./biaSize));
 	for (std::size_t i = 0; i < weightSize; ++i)
 	{
 		weight[i] = n(e);
@@ -36,7 +36,7 @@ TensorXF FullyConnectLayer::forward(TensorXF& input)
 			{
 				output(U{ nb, nc }) += input(U{ nb, c })*weight(U{ c, nc });
 			}
-			
+	//		std::cout << output(U{ nb, nc }) << "  ";
 		}
 	}
 	return output;
@@ -59,20 +59,24 @@ TensorXF FullyConnectLayer::backward(TensorXF & input)
 		}
 	}
 	//dw
-	for (unsigned int nb = 0; nb < preInputDim[0]; ++nb)
+	
+	for (unsigned int ni = 0; ni < preInputDim[1]; ++ni)
 	{
-		for (unsigned int ni = 0; ni < preInputDim[1]; ++ni)
+		for (unsigned int no = 0; no < weightDim[1]; ++no)
 		{
-			for (unsigned int no = 0; no < weightDim[1]; ++no)
+			dw(U{ ni, no }) = 0.;
+			for (unsigned int nb = 0; nb < preInputDim[0]; ++nb)
 			{
 				dw(U{ ni, no }) += preInput(U{ nb, ni })*input(U{ nb, no });
 			}
 		}
 	}
 	//db
-	for (unsigned int nb = 0; nb < preInputDim[0]; ++nb)
+	
+	for (unsigned int no = 0; no < weightDim[1]; ++no)
 	{
-		for (unsigned int no = 0; no < weightDim[1]; ++no)
+		db(U{ no }) = 0.;
+		for (unsigned int nb = 0; nb < preInputDim[0]; ++nb)
 		{
 			db(U{ no }) += input(U{ nb, no });
 		}
